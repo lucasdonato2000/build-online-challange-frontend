@@ -29,7 +29,7 @@ const LoginForm: React.FC = () => {
 
               localStorage.setItem("token", response.token);
 
-              window.location.href = "/contactsDashboard";
+              window.location.href = "/contactDashboard";
             } catch (error) {
               console.error(error);
               const message =

@@ -21,7 +21,7 @@ const Button: FC<ButtonProps> = ({
     return (
       <a
         href={href}
-        className={`bg-custom-green text-black rounded-full hover:bg-green-500 ${className} ${
+        className={`flex bg-custom-green items-center justify-center text-black rounded-full hover:bg-green-500 ${className} ${
           disabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >

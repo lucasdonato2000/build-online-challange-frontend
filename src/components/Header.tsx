@@ -1,18 +1,22 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
 import Button from "./Button";
+import { logout } from "../store/reducers/authReducer";
 
 const Header: React.FC = () => {
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    dispatch(logout());
     router.push("/");
   };
 
@@ -31,14 +35,14 @@ const Header: React.FC = () => {
         </div>
         <div className="flex-1 flex justify-end">
           <nav className="flex space-x-4 font-medium font-inter gradient-text">
-            <a href="/contacts" className="p-4 mr-2">
+            <a href="/contactDashboard" className="p-4 mr-2">
               Contacts
             </a>
           </nav>
         </div>
         <div className="flex-1 flex justify-start mr-auto">
           <nav className="flex space-x-4 font-medium font-inter gradient-text">
-            <a href="/notes" className="p-4 ml-10">
+            <a href="/noteDashboard" className="p-4 ml-10">
               Notes
             </a>
           </nav>

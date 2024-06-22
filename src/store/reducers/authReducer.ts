@@ -27,6 +27,11 @@ const authSlice = createSlice({
     stopLoading: (state) => {
       state.loading = false;
     },
+    logout: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.isAuthChecked = true;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -45,6 +50,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { startLoading, stopLoading } = authSlice.actions;
+export const { startLoading, stopLoading, logout } = authSlice.actions;
 
 export default authSlice.reducer;
