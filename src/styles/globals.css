@@ -1,0 +1,11 @@
+/* src/styles/globals.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.gradient-text {
+  background: linear-gradient(27.67deg, #3A3A3A 26.68%, #000000 125.92%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
