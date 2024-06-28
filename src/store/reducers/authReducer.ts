@@ -1,13 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { checkAuth } from "../actions/authActions";
-
-interface AuthState {
-  isAuthChecked: boolean;
-  isAuthenticated: boolean;
-  user: any | null;
-  loading: boolean;
-  error: string | null;
-}
+import { AuthState } from "../../types/authTypes";
+import { performLogin, checkAuth } from "../actions/authActions";
 
 const initialState: AuthState = {
   isAuthChecked: false,
@@ -21,35 +14,47 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    startLoading: (state) => {
-      state.loading = true;
-    },
-    stopLoading: (state) => {
-      state.loading = false;
-    },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
-      state.isAuthChecked = true;
     },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(performLogin.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(performLogin.fulfilled, (state, action) => {
+        state.isAuthenticated = true;
+        state.user = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(performLogin.rejected, (state, action) => {
+        state.isAuthenticated = false;
+        state.user = null;
+        state.loading = false;
+        state.error = action.error.message || "Login failed";
+      })
+      .addCase(checkAuth.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.isAuthChecked = true;
         state.isAuthenticated = !!action.payload;
         state.user = action.payload;
+        state.loading = false;
         state.error = null;
       })
       .addCase(checkAuth.rejected, (state, action) => {
         state.isAuthChecked = true;
         state.isAuthenticated = false;
         state.user = null;
-        state.error = action.error.message || null;
+        state.loading = false;
+        state.error = action.error.message || "Authentication check failed";
       });
   },
 });
 
-export const { startLoading, stopLoading, logout } = authSlice.actions;
-
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

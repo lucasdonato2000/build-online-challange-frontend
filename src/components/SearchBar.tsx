@@ -1,19 +1,25 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { FaSearch } from "react-icons/fa";
-
-interface SearchBarProps {
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-}
+import debounce from "lodash/debounce";
+import { SearchBarProps } from "../types";
 
 const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, setSearchTerm }) => {
+  const debouncedSetSearchTerm = useCallback(
+    debounce((term: string) => setSearchTerm(term), 300),
+    []
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedSetSearchTerm(e.target.value);
+  };
+
   return (
-    <div className="w-full mb-12 px-10 relative">
+    <div className="w-full mb-12 px-4 sm:px-10 relative">
       <div className="relative">
         <input
           type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          defaultValue={searchTerm}
+          onChange={handleInputChange}
           className="w-full p-2 pr-10 pl-3 border border-gray-600 rounded-md bg-custom-grey text-white focus:outline-none focus:border-custom-green"
           placeholder="Search contacts..."
         />

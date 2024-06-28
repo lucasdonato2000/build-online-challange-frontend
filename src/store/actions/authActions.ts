@@ -1,23 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getUserInfo } from "../../services/userService";
-import { startLoading, stopLoading } from "../reducers/loadingReducer";
+import { login, getUserInfo } from "../../services/authService";
 
-export const checkAuth = createAsyncThunk(
-  "auth/checkAuth",
-  async (_, { dispatch }) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        dispatch(startLoading());
-        const userInfo = await getUserInfo();
-        return userInfo;
-      } catch (error) {
-        localStorage.removeItem("token");
-        throw error;
-      } finally {
-        dispatch(stopLoading());
-      }
-    }
-    return null;
+export const performLogin = createAsyncThunk(
+  "auth/login",
+  async ({ email, password }: { email: string; password: string }) => {
+    const response = await login(email, password);
+    return response;
   }
 );
+
+export const checkAuth = createAsyncThunk("auth/checkAuth", async () => {
+  const response = await getUserInfo();
+  return response;
+});

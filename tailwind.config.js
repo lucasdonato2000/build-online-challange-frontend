@@ -20,6 +20,10 @@ module.exports = {
       fontWeight: {
         medium: 500,
       },
+      screens: {
+        xs: "240px",
+        xxs: "120px",
+      },
       colors: {
         "custom-green": "#54FA80",
         "custom-grey": "#242424",

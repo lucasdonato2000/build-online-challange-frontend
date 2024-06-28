@@ -1,13 +1,5 @@
 import React, { FC } from "react";
-
-interface ButtonProps {
-  href?: string;
-  children: React.ReactNode;
-  className?: string;
-  type?: "button" | "submit" | "reset";
-  onClick?: () => void;
-  disabled?: boolean;
-}
+import { ButtonProps } from "../types";
 
 const Button: FC<ButtonProps> = ({
   href,
@@ -21,7 +13,7 @@ const Button: FC<ButtonProps> = ({
     return (
       <a
         href={href}
-        className={`flex bg-custom-green items-center justify-center text-black rounded-full hover:bg-green-500 ${className} ${
+        className={`flex bg-custom-green items-center justify-center text-black rounded-full hover:bg-green-500  ${className} ${
           disabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >

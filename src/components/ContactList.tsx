@@ -1,41 +1,74 @@
-import React from "react";
-import { MdArrowForward } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import { MdKeyboardArrowRight } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../store/store";
+import { fetchContacts } from "../store/actions";
+import { ContactListProps } from "../types";
+import Loader from "./Loader";
 
-interface Contact {
-  id: number;
-  name: string;
-  email: string;
-  title: string;
-  profilePicture: string;
-}
+const ContactList: React.FC<ContactListProps> = ({
+  searchTerm,
+  contactsPerPage,
+  currentPage,
+  onPageChange,
+  onSelectContact,
+}) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { contacts, loading } = useSelector(
+    (state: RootState) => state.contacts
+  );
 
-interface ContactListProps {
-  contacts: Contact[];
-}
+  const [showLoader, setShowLoader] = useState(false);
 
-const ContactList: React.FC<ContactListProps> = ({ contacts }) => {
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        setShowLoader(true);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [loading]);
+
+  useEffect(() => {
+    dispatch(
+      fetchContacts({
+        limit: contactsPerPage,
+        offset: (currentPage - 1) * contactsPerPage,
+        searchTerm,
+      })
+    );
+  }, [dispatch, searchTerm, currentPage, contactsPerPage]);
+
   const defaultAvatar = "/default-avatar.png";
 
+  if (loading && showLoader) {
+    return <Loader />;
+  }
+
   return (
-    <div className="contacts-list bg-black grid gap-4 gap-x-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 w-full mx-auto px-10">
+    <div className="contacts-list bg-black grid gap-4 gap-x-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
       {contacts.map((contact) => (
         <div
           key={contact.id}
-          className="contact-item flex justify-between items-center p-4 mb-4 bg-custom-grey rounded-[27px] h-28"
+          className="contact-item flex justify-between items-center p-2 sm:p-4 mb-2 sm:mb-4 bg-custom-grey rounded-[27px] h-20 sm:h-28 min-w-[80px]"
         >
           <div className="flex items-center">
             <img
               src={contact.profilePicture || defaultAvatar}
               alt={contact.name}
-              className="w-20 h-20 rounded-full mr-4"
+              className="w-16 sm:w-20 h-16 sm:h-20 rounded-full mr-2 xs:mr-4"
             />
-            <div>
+            <div className="text-xs xs:text-base space-y-1 hidden xs:block">
               <h2 className="text-white">{contact.name}</h2>
               <p className="text-gray-400">{contact.title}</p>
             </div>
           </div>
-          <div className="arrow">
-            <MdArrowForward className="h-6 w-6 text-gray-400" />
+          <div className="arrow hidden xs:block">
+            <MdKeyboardArrowRight
+              className="h-4 w-4 sm:h-6 sm:w-6 text-gray-400 cursor-pointer"
+              onClick={() => onSelectContact(contact)}
+            />
           </div>
         </div>
       ))}
