@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginValidationSchema } from "../schemas/loginValidationSchema";
 import InputField from "./InputField";
 import Button from "./Button";
-import { login } from "../services/userService";
+import { login } from "../services/authService";
 import { startLoading, stopLoading } from "../store/reducers/loadingReducer";
 import { RootState } from "../store/store";
 import axios from "axios";
@@ -12,6 +12,7 @@ import axios from "axios";
 const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state: RootState) => state.loading);
+
   return (
     <div className="size-full flex items-center justify-center bg-black text-white m-60 mt-1">
       <div className="size-full p-8 space-y-6 bg-black rounded-lg shadow-lg m-60 mt-20">
@@ -25,7 +26,6 @@ const LoginForm: React.FC = () => {
             dispatch(startLoading());
             try {
               const response = await login(values.email, values.password);
-              console.log(response);
 
               localStorage.setItem("token", response.token);
 
@@ -42,17 +42,23 @@ const LoginForm: React.FC = () => {
             }
           }}
         >
-          {({ status }) => (
+          {({ status, handleChange, values }) => (
             <Form className="space-y-4">
               <InputField
                 type="email"
                 name="email"
+                value={values.email}
+                onChange={handleChange}
                 placeholder="john@doe.com"
+                className="w-full p-2 mt-1 bg-custom-grey rounded-md text-white"
               />
               <InputField
                 type="password"
                 name="password"
+                value={values.password}
+                onChange={handleChange}
                 placeholder="*********"
+                className="w-full p-2 mt-1 bg-custom-grey rounded-md text-white"
               />
               {status && (
                 <div className="text-red-500 text-center">{status}</div>
