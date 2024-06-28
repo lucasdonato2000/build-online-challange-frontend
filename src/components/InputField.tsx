@@ -1,26 +1,53 @@
 import React from "react";
-import { Field, ErrorMessage } from "formik";
+import { MdOutlineFileUpload } from "react-icons/md";
+import { InputFieldProps } from "../types";
 
-interface InputFieldProps {
-  type: string;
-  name: string;
-  placeholder: string;
-}
+const InputField: React.FC<InputFieldProps> = ({
+  type,
+  name,
+  value,
+  onChange,
+  placeholder,
+  className,
+  hideValue,
+}) => {
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
-const InputField: React.FC<InputFieldProps> = ({ type, name, placeholder }) => {
+  const handleIconClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
-    <div className="font-public-sans mb-6">
-      <Field
+    <div className="relative w-full">
+      <input
         type={type}
         name={name}
+        value={hideValue ? "" : value}
+        onChange={hideValue ? () => {} : onChange}
         placeholder={placeholder}
-        className="w-full px-4 py-2 rounded-md bg-custom-grey text-white focus:outline-none focus:border-green-500"
+        className={`w-full p-2 mt-1 rounded-md focus:outline-none focus:border-green-500 pr-10 ${className}`}
+        data-value={value}
+        style={{ color: hideValue ? "transparent" : "inherit" }}
+        readOnly={hideValue}
       />
-      <ErrorMessage
-        name={name}
-        component="div"
-        className="text-red-500 text-sm mt-1"
-      />
+      {type === "text" && name === "profilePicture" && (
+        <>
+          <MdOutlineFileUpload
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer"
+            size={24}
+            onClick={handleIconClick}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={onChange}
+          />
+        </>
+      )}
     </div>
   );
 };
