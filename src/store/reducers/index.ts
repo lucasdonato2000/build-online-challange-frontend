@@ -5,6 +5,7 @@ import contactReducer from "./contactReducer";
 import selectedContactReducer from "./selectedContactReducer";
 import errorReducer from "./errorReducer";
 import editedContactReducer from "./editedContactReducer";
+import noteReducer from "./noteReducer";
 
 const rootReducer = combineReducers({
   loading: loadingReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   selectedContact: selectedContactReducer,
   editedContact: editedContactReducer,
   error: errorReducer,
+  notes: noteReducer,
 });
 
 export default rootReducer;

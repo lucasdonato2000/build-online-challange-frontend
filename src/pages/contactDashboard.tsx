@@ -55,7 +55,7 @@ const ContactDashboard: React.FC = () => {
 
   const handleSearchTermChange = (term: string) => {
     dispatch(setSearchTerm(term));
-    setCurrentPage(1); // Reiniciar a la primera página al buscar
+    setCurrentPage(1);
   };
 
   const handleContactSelect = (contact: Contact) => {
@@ -145,15 +145,15 @@ const ContactDashboard: React.FC = () => {
           {!selectedContact && !isAdding ? (
             <>
               <ContactList
-                searchTerm={searchTerm} // Pasar searchTerm como prop
+                searchTerm={searchTerm}
                 contactsPerPage={contactsPerPage}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 onSelectContact={handleContactSelect}
               />
               <Pagination
-                totalContacts={total}
-                contactsPerPage={contactsPerPage}
+                totalItems={total}
+                itemsPerPage={contactsPerPage}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
               />

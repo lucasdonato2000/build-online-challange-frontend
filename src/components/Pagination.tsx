@@ -2,12 +2,12 @@ import React from "react";
 import { PaginationProps } from "../types";
 
 const Pagination: React.FC<PaginationProps> = ({
-  totalContacts,
-  contactsPerPage,
+  totalItems,
+  itemsPerPage,
   currentPage,
   onPageChange,
 }) => {
-  const totalPages = Math.ceil(totalContacts / contactsPerPage);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -36,7 +36,7 @@ const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(index + 1)}
           className={`px-4 py-2 mx-1 ${
             currentPage === index + 1
-              ? "bg-blue-600 text-white"
+              ? "bg-custom-green text-custom-grey"
               : "bg-gray-600 text-white"
           } rounded`}
         >

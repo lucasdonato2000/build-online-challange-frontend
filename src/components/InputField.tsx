@@ -21,17 +21,29 @@ const InputField: React.FC<InputFieldProps> = ({
 
   return (
     <div className="relative w-full">
-      <input
-        type={type}
-        name={name}
-        value={hideValue ? "" : value}
-        onChange={hideValue ? () => {} : onChange}
-        placeholder={placeholder}
-        className={`w-full p-2 mt-1 rounded-md focus:outline-none focus:border-green-500 pr-10 ${className}`}
-        data-value={value}
-        style={{ color: hideValue ? "transparent" : "inherit" }}
-        readOnly={hideValue}
-      />
+      {type === "textarea" ? (
+        <textarea
+          name={name}
+          onChange={hideValue ? () => {} : onChange}
+          value={hideValue ? "" : value}
+          placeholder={placeholder}
+          className={`w-full p-2 mt-1 rounded-md focus:outline-none focus:border-green-500 ${className}`}
+          style={{ color: hideValue ? "transparent" : "inherit" }}
+          readOnly={hideValue}
+        />
+      ) : (
+        <input
+          type={type}
+          name={name}
+          value={hideValue ? "" : value}
+          onChange={hideValue ? () => {} : onChange}
+          placeholder={placeholder}
+          className={`w-full p-2 mt-1 rounded-md focus:outline-none focus:border-green-500 pr-10 ${className}`}
+          data-value={value}
+          style={{ color: hideValue ? "transparent" : "inherit" }}
+          readOnly={hideValue}
+        />
+      )}
       {type === "text" && name === "profilePicture" && (
         <>
           <MdOutlineFileUpload

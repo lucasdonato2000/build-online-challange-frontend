@@ -1,15 +1,16 @@
 export interface PaginationProps {
-  totalContacts: number;
-  contactsPerPage: number;
+  totalItems: number;
+  itemsPerPage: number;
   currentPage: number;
   onPageChange: (page: number) => void;
 }
-
 export interface InputFieldProps {
   type: string;
   name: string;
   value?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   placeholder?: string;
   className?: string;
   hideValue?: boolean;

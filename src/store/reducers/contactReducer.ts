@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   fetchContacts,
+  fetchContactById,
   updateContact,
   addContact,
+  fetchAllContacts,
 } from "../actions/contactActions";
-import { Contact, ContactState } from "../../types";
+import { Contact, ContactsResponse, ContactState } from "../../types";
 
 const initialState: ContactState = {
   contacts: [],
@@ -40,13 +42,25 @@ const contactSlice = createSlice({
         ) => {
           state.contacts = action.payload?.contacts ?? [];
           state.total = action.payload?.total ?? 0;
-
           state.loading = false;
         }
       )
       .addCase(fetchContacts.rejected, (state) => {
         state.loading = false;
       })
+      .addCase(
+        fetchContactById.fulfilled,
+        (state, action: PayloadAction<Contact | undefined>) => {
+          if (action.payload) {
+            if (
+              !state.contacts.find(
+                (contact) => contact.id === action.payload?.id
+              )
+            )
+              state.contacts.push(action.payload);
+          }
+        }
+      )
       .addCase(
         updateContact.fulfilled,
         (state, action: PayloadAction<Contact | undefined>) => {
@@ -69,7 +83,17 @@ const contactSlice = createSlice({
             state.filteredContacts = state.contacts;
           }
         }
-      );
+      )
+      .addCase(
+        fetchAllContacts.fulfilled,
+        (state, action: PayloadAction<ContactsResponse | undefined>) => {
+          if (action.payload) state.contacts = action.payload.contacts;
+          state.loading = false;
+        }
+      )
+      .addCase(fetchAllContacts.rejected, (state, action) => {
+        state.loading = false;
+      });
   },
 });
 

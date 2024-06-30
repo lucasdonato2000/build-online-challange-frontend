@@ -12,6 +12,17 @@ const contactRepository = {
     );
     return response.data;
   },
+  async getAllContacts(limit: number): Promise<ContactsResponse> {
+    const response = await api.get(
+      `/contacts?limit=${limit}&offset=0&searchTerm=`
+    );
+    return response.data;
+  },
+
+  async getContactById(contactId: string): Promise<Contact> {
+    const response = await api.get(`/contacts/${contactId}`);
+    return response.data.contact;
+  },
 
   async addContact(
     contact: Partial<Contact>,
@@ -38,7 +49,6 @@ const contactRepository = {
     contact: Partial<Contact>,
     profilePicture?: File
   ): Promise<Contact> {
-    console.log(contact);
     const formData = new FormData();
     Object.keys(contact).forEach((key) => {
       formData.append(key, contact[key as keyof Contact] as string | Blob);

@@ -3,6 +3,8 @@ import {
   getContacts,
   updateContact as updateContactService,
   addContact as addContactService,
+  getContactById,
+  getAllContacts,
 } from "../../services/contactService";
 import { Contact } from "../../types";
 import { setError } from "../reducers/errorReducer";
@@ -67,5 +69,21 @@ export const addContact = createAsyncThunk(
       dispatch(setError(errorMessage));
       return rejectWithValue(errorMessage);
     }
+  }
+);
+
+export const fetchContactById = createAsyncThunk(
+  "contacts/fetchContactById",
+  async (contactId: string) => {
+    const response = await getContactById(contactId);
+    return response;
+  }
+);
+
+export const fetchAllContacts = createAsyncThunk(
+  "contacts/fetchAllContacts",
+  async () => {
+    const response = await getAllContacts();
+    return response;
   }
 );

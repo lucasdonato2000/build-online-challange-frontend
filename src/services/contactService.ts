@@ -1,23 +1,35 @@
 import contactRepository from "../repositories/contactRepository";
-import { Contact } from "../types";
-import axios from "axios";
-
-const handleServiceError = (error: any): never => {
-  if (axios.isAxiosError(error)) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-  }
-  throw new Error(error.message || "An unexpected error occurred");
-};
+import { Contact, ContactsResponse } from "../types";
+import { handleServiceError } from "../utils/errorHandler";
 
 export const getContacts = async (
   limit: number,
   offset: number,
   searchTerm: string
-): Promise<{ total: number; contacts: Contact[] } | undefined> => {
+): Promise<ContactsResponse | undefined> => {
   try {
     return await contactRepository.getContacts(limit, offset, searchTerm);
+  } catch (error) {
+    handleServiceError(error);
+  }
+};
+
+export const getContactById = async (
+  contactId: string
+): Promise<Contact | undefined> => {
+  try {
+    return await contactRepository.getContactById(contactId);
+  } catch (error) {
+    handleServiceError(error);
+  }
+};
+
+export const getAllContacts = async (): Promise<
+  ContactsResponse | undefined
+> => {
+  try {
+    const { total } = await contactRepository.getContacts(1, 0, "");
+    return await contactRepository.getAllContacts(total);
   } catch (error) {
     handleServiceError(error);
   }
