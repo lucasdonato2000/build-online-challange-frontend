@@ -12,6 +12,7 @@ const ContactList: React.FC<ContactListProps> = ({
   currentPage,
   onPageChange,
   onSelectContact,
+  isScreenSmall,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { contacts, loading } = useSelector(
@@ -51,20 +52,22 @@ const ContactList: React.FC<ContactListProps> = ({
       {contacts.map((contact) => (
         <div
           key={contact.id}
-          className="contact-item flex justify-between items-center p-2 sm:p-4 mb-2 sm:mb-4 bg-custom-grey rounded-[27px] h-20 sm:h-28 min-w-[80px]"
+          className={`contact-item flex justify-between items-center p-2 sm:p-4 mb-2 sm:mb-4 rounded-[27px] h-20 sm:h-28 min-w-[80px] ${
+            isScreenSmall ? "bg-black border border-gray-500" : "bg-custom-gray"
+          }`}
         >
           <div className="flex items-center">
             <img
               src={contact.profilePicture || defaultAvatar}
               alt={contact.name}
-              className="w-16 sm:w-20 h-16 sm:h-20 rounded-full mr-2 xs:mr-4 priority"
+              className="w-16 sm:w-20 h-16 sm:h-20 rounded-full mr-2 xs:mr-4"
             />
-            <div className="text-xs xs:text-base space-y-1 hidden xs:block">
+            <div className="text-xs xs:text-base space-y-1">
               <h2 className="text-white">{contact.name}</h2>
               <p className="text-gray-400">{contact.title}</p>
             </div>
           </div>
-          <div className="arrow hidden xs:block">
+          <div className="arrow">
             <MdKeyboardArrowRight
               className="h-4 w-4 sm:h-6 sm:w-6 text-gray-400 cursor-pointer"
               onClick={() => onSelectContact(contact)}

@@ -10,7 +10,6 @@ const MapTooltip: React.FC<MapTooltipProps> = ({
   if (!mapCenter || !showMap || !isLoaded) {
     return null;
   }
-  console.log(mapCenter);
   return (
     <div className=" mt-2 w-full h-64 bg-white border border-gray-300 rounded-lg shadow-lg">
       <GoogleMap

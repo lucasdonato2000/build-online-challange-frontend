@@ -26,7 +26,7 @@ module.exports = {
       },
       colors: {
         "custom-green": "#54FA80",
-        "custom-grey": "#242424",
+        "custom-gray": "#242424",
       },
     },
   },

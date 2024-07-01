@@ -22,10 +22,16 @@ export interface NoteListProps {
   notesPerPage: number;
   currentPage: number;
   onPageChange: (page: number) => void;
-  onSelectNote: (note: Note) => void;
+  onSelectNote: (noteId: string | null) => void;
+  isScreenSmall: boolean;
 }
 
 export interface AddNoteProps {
   onSave: () => void;
   onCancel: () => void;
+}
+
+export interface NoteDetailProps {
+  noteId: string;
+  onBack: () => void;
 }

@@ -12,6 +12,8 @@ import { clearError } from "../store/reducers/errorReducer";
 import Button from "../components/Button";
 import useAuthRedirect from "../hooks/useAuthRedirect";
 import Pagination from "../components/Pagination";
+import BottomNavBar from "../components/BottomNavbar";
+import NoteDetail from "../components/NoteDetail";
 
 const NoteDashboard: React.FC = () => {
   const { isAuthChecked, isAuthenticated } = useAuthRedirect("/noteDashboard");
@@ -30,10 +32,13 @@ const NoteDashboard: React.FC = () => {
   const [currentPage, setCurrentPageState] = useState(1);
   const [notesPerPage] = useState(6);
   const [isAdding, setIsAdding] = useState(false);
+  const [showNavBar, setShowNavBar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsScreenSmall(window.innerWidth < 1250);
+      setIsScreenSmall(window.innerWidth < 768);
     };
 
     window.addEventListener("resize", handleResize);
@@ -84,6 +89,27 @@ const NoteDashboard: React.FC = () => {
     dispatch(clearError());
   };
 
+  const handleSelectNote = (noteId: string | null) => {
+    setSelectedNoteId(noteId);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        setShowNavBar(false);
+      } else {
+        setShowNavBar(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [lastScrollY]);
+
   if (!isAuthChecked) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -113,59 +139,87 @@ const NoteDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-16 bg-black">
       <Header />
       <main className="flex flex-1 flex-col items-center justify-start bg-black text-white w-full relative">
         {errorMessage && (
           <div className="bg-red-500 text-white p-4 rounded-md mb-4">
             {errorMessage}
-            <button
-              onClick={() => dispatch(clearError())}
-              className="ml-4 underline"
-            >
+            <button onClick={handleClearError} className="ml-4 underline">
               Dismiss
             </button>
           </div>
         )}
-        {!isAdding && (
-          <div className="flex flex-col items-center sm:flex-row sm:justify-between sm:items-center w-full px-4 sm:px-10 mt-10 sm:mt-20 mb-4 sm:mb-8">
-            <h1 className="text-4xl font-bold text-center sm:text-left mb-4 sm:mb-0 hidden xs:block">
-              Notes
-            </h1>
-            <Button
-              onClick={handleAddNewClick}
-              className="w-48 h-12 flex items-center justify-center rounded-full font-medium font-inter text-center"
-            >
-              Add new
-            </Button>
+        {!isAdding && !selectedNoteId && (
+          <div className="flex flex-col items-center w-full px-4 sm:px-10 mt-10 sm:mt-20 mb-2 sm:mb-4">
+            <div className="w-full flex justify-between items-center mb-4">
+              <h1
+                className={`text-3xl font-bold ${
+                  isScreenSmall ? "text-center" : "text-left"
+                }`}
+              >
+                Notes
+              </h1>
+              <Button
+                onClick={handleAddNewClick}
+                className={` flex items-center justify-center rounded-full font-medium font-inter text-center ${
+                  isScreenSmall ? "w-28 h-12" : "w-48 h-12"
+                }`}
+              >
+                Add new
+              </Button>
+            </div>
           </div>
         )}
+
         {isAdding ? (
           <AddNote onSave={handleSaveNote} onCancel={handleCancel} />
+        ) : selectedNoteId ? (
+          <div className="w-full flex justify-start px-4 sm:px-10">
+            <NoteDetail
+              noteId={selectedNoteId}
+              onBack={() => handleSelectNote(null)}
+            />
+          </div>
         ) : (
           <>
             <SearchBar
               searchTerm={searchTerm}
               setSearchTerm={handleSearchTermChange}
             />
+
+            {isScreenSmall && (
+              <div className="mb-10">
+                <Pagination
+                  totalItems={total}
+                  itemsPerPage={notesPerPage}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
             <div className="w-full px-4 sm:px-10">
               <NoteList
                 searchTerm={searchTerm}
                 notesPerPage={notesPerPage}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
-                onSelectNote={() => {}}
+                onSelectNote={handleSelectNote}
+                isScreenSmall={isScreenSmall}
               />
-              <Pagination
-                totalItems={total}
-                itemsPerPage={notesPerPage}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-              />
+              {!isScreenSmall && (
+                <Pagination
+                  totalItems={total}
+                  itemsPerPage={notesPerPage}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+              )}
             </div>
           </>
         )}
       </main>
+      {isScreenSmall && <BottomNavBar activeTab="notes" />}
     </div>
   );
 };

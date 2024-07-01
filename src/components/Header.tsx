@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-black shadow-md  hidden lg:flex">
+    <header className="bg-black shadow-md hidden lg:flex">
       <div className="container mx-auto bg-white rounded-3xl flex justify-between items-center h-16 p-4 mt-8 relative">
         <div className="ml-5 text-lg font-bold text-gray-800 pl-3 pr-3">
           <a href="/">

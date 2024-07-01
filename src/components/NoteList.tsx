@@ -6,6 +6,7 @@ import { fetchNotes } from "../store/actions/noteActions";
 import { fetchContactById } from "../store/actions/contactActions";
 import Loader from "./Loader";
 import { NoteListProps } from "../types";
+import NoteDetail from "./NoteDetail";
 
 const NoteList: React.FC<NoteListProps> = ({
   searchTerm,
@@ -13,6 +14,7 @@ const NoteList: React.FC<NoteListProps> = ({
   currentPage,
   onPageChange,
   onSelectNote,
+  isScreenSmall,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { notes, loading } = useSelector((state: RootState) => state.notes);
@@ -26,6 +28,7 @@ const NoteList: React.FC<NoteListProps> = ({
   );
   const [showLoader, setShowLoader] = useState(false);
   const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -72,11 +75,23 @@ const NoteList: React.FC<NoteListProps> = ({
   };
 
   const handleExpandClick = (noteId: string) => {
-    setExpandedNoteId(expandedNoteId === noteId ? null : noteId);
+    if (isScreenSmall) {
+      onSelectNote(noteId);
+    } else {
+      setExpandedNoteId(expandedNoteId === noteId ? null : noteId);
+    }
+  };
+
+  const handleBackClick = () => {
+    onSelectNote(null);
   };
 
   if (loading && showLoader) {
     return <Loader />;
+  }
+
+  if (isScreenSmall && selectedNoteId) {
+    return <NoteDetail noteId={selectedNoteId} onBack={handleBackClick} />;
   }
 
   return (
@@ -87,9 +102,11 @@ const NoteList: React.FC<NoteListProps> = ({
         return (
           <div
             key={note.id}
-            className={`note-item flex justify-between items-center p-2 sm:p-4 mb-2 sm:mb-4 bg-custom-grey rounded-[27px] ${
-              isExpanded ? "h-auto" : "h-20 sm:h-28"
-            } min-w-[80px]`}
+            className={`note-item flex justify-between items-center p-2 sm:p-4 mb-2 sm:mb-4 rounded-[27px] min-w-[80px] ${
+              isScreenSmall
+                ? "bg-black border border-gray-500"
+                : "bg-custom-gray"
+            }`}
           >
             <div className="flex items-center">
               <img
@@ -106,9 +123,7 @@ const NoteList: React.FC<NoteListProps> = ({
             </div>
             <div className="arrow hidden xs:block">
               <MdKeyboardArrowRight
-                className={`h-4 w-4 sm:h-6 sm:w-6 text-gray-400 cursor-pointer ${
-                  isExpanded ? "rotate-90" : ""
-                }`}
+                className="h-4 w-4 sm:h-6 sm:w-6 text-gray-400 cursor-pointer"
                 onClick={() => handleExpandClick(note.id ?? "")}
               />
             </div>

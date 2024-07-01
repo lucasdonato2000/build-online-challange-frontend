@@ -11,7 +11,7 @@ import {
 } from "../store/actions/editedContactActions";
 import { setError, clearError } from "../store/actions/errorActions";
 import { addContactValidationSchema } from "../schemas/addContactValidationSchema";
-import { AddContactProps, Contact } from "../types";
+import { AddContactProps } from "../types";
 
 const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -23,6 +23,8 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
   const [profilePicturePreview, setProfilePicturePreview] = useState<
     string | undefined
   >(undefined);
+
+  const isScreenSmall = window.innerWidth < 768;
 
   const handleFileChange =
     (setFieldValue: (field: string, value: any) => void) =>
@@ -41,9 +43,14 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
     };
 
   return (
-    <div className="relative flex flex-col items-center bg-custom-grey rounded-3xl p-4 sm:p-8 shadow-lg w-full max-w-5xl min-h-[40rem] mx-auto my-6 sm:my-12">
+    <div
+      className={`relative flex flex-col items-center rounded-3xl p-4 sm:p-8 shadow-lg w-full max-w-5xl min-h-[40rem] mx-auto my-6 sm:my-12 ${
+        isScreenSmall ? "bg-black pt-10" : "bg-custom-gray"
+      }`}
+    >
       <Formik
         initialValues={{
+          name: "",
           firstName: "",
           surname: "",
           title: "",
@@ -59,7 +66,9 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
             dispatch(clearError());
             const newContactData = {
               newContact: {
-                name: `${values.firstName} ${values.surname}`,
+                name: isScreenSmall
+                  ? values.name
+                  : `${values.firstName} ${values.surname}`,
                 title: values.title,
                 address: values.address,
                 phone: values.phone,
@@ -89,21 +98,29 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
       >
         {({ setFieldValue, handleChange, values, status }) => (
           <Form className="w-full">
-            <div className="flex flex-col sm:flex-row justify-start w-full items-center sm:items-start">
-              <div className="w-24 sm:w-36 h-24 sm:h-32 mb-4 sm:mb-0 rounded-full border-4 border-custom-green flex items-center justify-center">
-                <div className="rounded-full overflow-hidden w-20 sm:w-28 h-20 sm:h-28">
-                  <img
-                    src={profilePicturePreview || "/default-avatar.png"}
-                    alt="Profile Preview"
-                    className="object-cover rounded-full"
-                  />
-                </div>
+            <div
+              className={`flex ${
+                isScreenSmall ? "flex-row items-start" : "flex-col items-center"
+              }`}
+            >
+              <div className={`mb-4 ${isScreenSmall ? "mr-4" : ""}`}>
+                <img
+                  src={profilePicturePreview || "/default-avatar.png"}
+                  alt="Profile Preview"
+                  className={`w-20 h-20 sm:w-32 sm:h-32 object-cover rounded-full ${
+                    !isScreenSmall
+                      ? "p-1 sm:border-4 sm:border-custom-green"
+                      : ""
+                  }`}
+                />
               </div>
-              <div className="flex flex-col items-center sm:items-start w-full px-6 py-4 sm:py-8">
-                <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-2 font-red-hat truncate w-full text-center sm:text-left">
-                  {values.firstName} {values.surname}
+              <div className={isScreenSmall ? "" : "text-center"}>
+                <h2 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold pt-3 mb-2 font-red-hat">
+                  {isScreenSmall
+                    ? values.name
+                    : `${values.firstName} ${values.surname}`}
                 </h2>
-                <p className="text-gray-400 text-sm sm:text-base lg:text-lg mb-4 pt-3 font-public-sans truncate w-full text-center sm:text-left">
+                <p className="text-gray-400 text-base sm:text-lg lg:text-xl mb-4 sm:pt-3 font-public-sans">
                   {values.title}
                 </p>
               </div>
@@ -111,36 +128,68 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
 
             <div className="w-full px-4 text-gray-400">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="col-span-1">
-                  <label className="text-gray-400">First Name</label>
-                  <InputField
-                    type="text"
-                    name="firstName"
-                    value={values.firstName}
-                    onChange={handleChange}
-                    className="text-gray-600 font-public-sans"
-                  />
-                  <ErrorMessage
-                    name="firstName"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-                <div className="col-span-1">
-                  <label className="text-gray-400">Surname</label>
-                  <InputField
-                    type="text"
-                    name="surname"
-                    value={values.surname}
-                    onChange={handleChange}
-                    className="text-gray-600 font-public-sans"
-                  />
-                  <ErrorMessage
-                    name="surname"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
+                {isScreenSmall ? (
+                  <div className="col-span-1">
+                    <label className="text-gray-400">Name</label>
+                    <InputField
+                      type="text"
+                      name="name"
+                      value={values.name}
+                      onChange={(e) => {
+                        handleChange(e);
+                        const [firstName, ...surname] =
+                          e.target.value.split(" ");
+                        setFieldValue("firstName", firstName);
+                        setFieldValue("surname", surname.join(" "));
+                      }}
+                      className={`text-gray-600 font-public-sans ${
+                        isScreenSmall ? "bg-custom-gray" : ""
+                      }`}
+                    />
+                    <ErrorMessage
+                      name="name"
+                      component="div"
+                      className="text-red-500"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div className="col-span-1">
+                      <label className="text-gray-400">First Name</label>
+                      <InputField
+                        type="text"
+                        name="firstName"
+                        value={values.firstName}
+                        onChange={handleChange}
+                        className={`text-gray-600 font-public-sans ${
+                          isScreenSmall ? "bg-custom-gray" : ""
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="firstName"
+                        component="div"
+                        className="text-red-500"
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <label className="text-gray-400">Surname</label>
+                      <InputField
+                        type="text"
+                        name="surname"
+                        value={values.surname}
+                        onChange={handleChange}
+                        className={`text-gray-600 font-public-sans ${
+                          isScreenSmall ? "bg-custom-gray" : ""
+                        }`}
+                      />
+                      <ErrorMessage
+                        name="surname"
+                        component="div"
+                        className="text-red-500"
+                      />
+                    </div>
+                  </>
+                )}
                 <div className="col-span-1">
                   <label className="text-gray-400">Title</label>
                   <InputField
@@ -148,7 +197,9 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
                     name="title"
                     value={values.title}
                     onChange={handleChange}
-                    className="text-gray-600 font-public-sans"
+                    className={`text-gray-600 font-public-sans ${
+                      isScreenSmall ? "bg-custom-gray" : ""
+                    }`}
                   />
                   <ErrorMessage
                     name="title"
@@ -162,7 +213,9 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
                     type="text"
                     name="profilePicture"
                     onChange={handleFileChange(setFieldValue)}
-                    className="text-gray-600 font-public-sans"
+                    className={`text-gray-600 font-public-sans ${
+                      isScreenSmall ? "bg-custom-gray" : ""
+                    }`}
                     hideValue={true}
                     placeholder="Upload file"
                   />
@@ -179,7 +232,9 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
                     name="address"
                     value={values.address}
                     onChange={handleChange}
-                    className="text-gray-600 font-public-sans"
+                    className={`text-gray-600 font-public-sans ${
+                      isScreenSmall ? "bg-custom-gray" : ""
+                    }`}
                   />
                   <ErrorMessage
                     name="address"
@@ -194,7 +249,9 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
                     name="phone"
                     value={values.phone}
                     onChange={handleChange}
-                    className="text-gray-600 font-public-sans"
+                    className={`text-gray-600 font-public-sans ${
+                      isScreenSmall ? "bg-custom-gray" : ""
+                    }`}
                   />
                   <ErrorMessage
                     name="phone"
@@ -209,7 +266,9 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
                     name="email"
                     value={values.email}
                     onChange={handleChange}
-                    className="text-gray-600 font-public-sans"
+                    className={`text-gray-600 font-public-sans ${
+                      isScreenSmall ? "bg-custom-gray" : ""
+                    }`}
                   />
                   <ErrorMessage
                     name="email"
@@ -219,13 +278,17 @@ const AddContact: React.FC<AddContactProps> = ({ onSave, onCancel }) => {
                 </div>
               </div>
             </div>
-            <div className="flex mt-4 justify-center">
+            <div className="flex justify-center mt-auto">
               <Button
                 type="submit"
-                className="w-full sm:w-48 py-2 px-4 sm:px-8 rounded-full font-medium font-inter text-center"
+                className={`${
+                  isScreenSmall
+                    ? "w-2/3 h-14 sm:w-48 py-2 px-4 sm:px-8 rounded-full font-bold font-public-sans text-center mt-12"
+                    : "w-full sm:w-48 py-2 px-4 sm:px-8 rounded-full font-medium font-inter text-center mt-4"
+                }`}
                 disabled={loading}
               >
-                {loading ? "Saving..." : "Save"}
+                {isScreenSmall ? "SAVE" : "Save"}
               </Button>
             </div>
           </Form>

@@ -18,6 +18,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { Contact } from "../types";
 import AddContact from "../components/AddContact";
 import Pagination from "../components/Pagination";
+import BottomNavBar from "../components/BottomNavbar";
 
 const ContactDashboard: React.FC = () => {
   const { isAuthChecked, isAuthenticated } =
@@ -39,10 +40,12 @@ const ContactDashboard: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [contactsPerPage] = useState(6);
+  const [showNavBar, setShowNavBar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsScreenSmall(window.innerWidth < 1250);
+      setIsScreenSmall(window.innerWidth < 768);
     };
 
     window.addEventListener("resize", handleResize);
@@ -52,6 +55,23 @@ const ContactDashboard: React.FC = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        setShowNavBar(false);
+      } else {
+        setShowNavBar(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [lastScrollY]);
 
   const handleSearchTermChange = (term: string) => {
     dispatch(setSearchTerm(term));
@@ -111,9 +131,18 @@ const ContactDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-16 bg-black">
       <Header />
       <main className="flex flex-1 flex-col items-center justify-start bg-black text-white w-full relative">
+        {isScreenSmall && selectedContact && (
+          <div
+            className="absolute z-50 top-2 left-2 flex items-center text-gray-400 cursor-pointer"
+            onClick={handleBack}
+          >
+            <span className="text-2xl mr-2">&#8592;</span>
+            {isEditing ? "Cancel" : "Back"}
+          </div>
+        )}
         {errorMessage && (
           <div className="bg-red-500 text-white p-4 rounded-md mb-4">
             {errorMessage}
@@ -124,22 +153,36 @@ const ContactDashboard: React.FC = () => {
         )}
         {!selectedContact && !isAdding && (
           <div className="flex flex-col items-center sm:flex-row sm:justify-between sm:items-center w-full px-4 sm:px-10 mt-10 sm:mt-20 mb-4 sm:mb-8">
-            <h1 className="text-4xl font-bold text-center sm:text-left mb-4 sm:mb-0 hidden xs:block">
+            <h1 className="text-3xl font-bold text-center sm:text-left mb-4 sm:mb-0">
               Contacts
             </h1>
-            <Button
-              onClick={handleAddNewClick}
-              className="w-48 h-12 flex items-center justify-center rounded-full font-medium font-inter text-center"
-            >
-              Add new
-            </Button>
+            {!isScreenSmall && (
+              <Button
+                onClick={handleAddNewClick}
+                className="w-48 h-12 flex items-center justify-center rounded-full font-medium font-inter text-center"
+              >
+                Add new
+              </Button>
+            )}
           </div>
         )}
         {!selectedContact && !isAdding && (
-          <SearchBar
-            searchTerm={searchTerm}
-            setSearchTerm={handleSearchTermChange}
-          />
+          <div className="w-full ">
+            <SearchBar
+              searchTerm={searchTerm}
+              setSearchTerm={handleSearchTermChange}
+            />
+          </div>
+        )}
+        {isScreenSmall && !selectedContact && !isAdding && (
+          <div className="justify-center mb-10">
+            <Pagination
+              totalItems={total}
+              itemsPerPage={contactsPerPage}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
         )}
         <div className="w-full px-4 sm:px-10">
           {!selectedContact && !isAdding ? (
@@ -150,13 +193,16 @@ const ContactDashboard: React.FC = () => {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 onSelectContact={handleContactSelect}
+                isScreenSmall={isScreenSmall}
               />
-              <Pagination
-                totalItems={total}
-                itemsPerPage={contactsPerPage}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-              />
+              {!isScreenSmall && (
+                <Pagination
+                  totalItems={total}
+                  itemsPerPage={contactsPerPage}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+              )}
             </>
           ) : isAdding ? (
             <AddContact onSave={handleAddSave} onCancel={handleBack} />
@@ -176,18 +222,13 @@ const ContactDashboard: React.FC = () => {
                   <MdKeyboardArrowRight className="text-white h-8 w-8 transform" />
                 </div>
               )}
-              {isScreenSmall && !isEditing && (
-                <div
-                  className="absolute right-4 bottom-0.5 bottom-1/4 xs:right-32 lg:top-auto lg:right-32 cursor-pointer bg-black p-2 rounded-full"
-                  onClick={handleBack}
-                >
-                  <MdKeyboardArrowRight className="text-white h-8 w-8 transform " />
-                </div>
-              )}
             </div>
           )}
         </div>
       </main>
+      {isScreenSmall && showNavBar && !selectedContact && !isAdding && (
+        <BottomNavBar activeTab="contacts" />
+      )}
     </div>
   );
 };

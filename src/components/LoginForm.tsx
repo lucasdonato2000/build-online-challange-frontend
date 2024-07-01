@@ -14,8 +14,8 @@ const LoginForm: React.FC = () => {
   const isLoading = useSelector((state: RootState) => state.loading);
 
   return (
-    <div className="size-full flex items-center justify-center bg-black text-white m-60 mt-1">
-      <div className="size-full p-8 space-y-6 bg-black rounded-lg shadow-lg m-60 mt-20">
+    <div className="size-full flex items-center justify-center bg-black text-white lg:m-60 lg:mt-1 min-h-screen lg:min-h-0">
+      <div className="w-full max-w-2xl p-8 space-y-6 bg-black rounded-sm shadow-sm m-4 lg:m-60 lg:mt-20">
         <h1 className="text-3xl font-black text-center font-red-hat">
           Welcome
         </h1>
@@ -50,7 +50,7 @@ const LoginForm: React.FC = () => {
                 value={values.email}
                 onChange={handleChange}
                 placeholder="john@doe.com"
-                className="w-full p-2 mt-1 bg-custom-grey rounded-md text-white"
+                className="w-full p-2 mt-4 bg-custom-gray rounded-md text-white"
               />
               <InputField
                 type="password"
@@ -58,14 +58,14 @@ const LoginForm: React.FC = () => {
                 value={values.password}
                 onChange={handleChange}
                 placeholder="*********"
-                className="w-full p-2 mt-1 bg-custom-grey rounded-md text-white"
+                className="w-full p-2 mt-1 bg-custom-gray rounded-md text-white"
               />
               {status && (
                 <div className="text-red-500 text-center">{status}</div>
               )}
               <div className="flex justify-center">
                 <Button
-                  className="w-48 py-2 px-8 rounded-full font-medium font-inter"
+                  className="w-full lg:w-48 py-2 px-8 rounded-full font-medium font-inter"
                   type="submit"
                   disabled={isLoading}
                 >

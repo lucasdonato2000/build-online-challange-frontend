@@ -22,6 +22,7 @@ export interface ContactListProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   onSelectContact: (contact: Contact) => void;
+  isScreenSmall: boolean;
 }
 
 export interface SelectedContactState {
