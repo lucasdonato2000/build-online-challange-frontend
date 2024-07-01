@@ -14,6 +14,7 @@ const initialState: ContactState = {
   searchTerm: "",
   total: 0,
   loading: false,
+  error: null,
 };
 
 const contactSlice = createSlice({
@@ -31,6 +32,7 @@ const contactSlice = createSlice({
     builder
       .addCase(fetchContacts.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(
         fetchContacts.fulfilled,
@@ -45,8 +47,9 @@ const contactSlice = createSlice({
           state.loading = false;
         }
       )
-      .addCase(fetchContacts.rejected, (state) => {
+      .addCase(fetchContacts.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as { [key: string]: string };
       })
       .addCase(
         fetchContactById.fulfilled,
@@ -93,6 +96,7 @@ const contactSlice = createSlice({
       )
       .addCase(fetchAllContacts.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as { [key: string]: string };
       });
   },
 });

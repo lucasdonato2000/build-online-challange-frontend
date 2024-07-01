@@ -74,16 +74,24 @@ export const addContact = createAsyncThunk(
 
 export const fetchContactById = createAsyncThunk(
   "contacts/fetchContactById",
-  async (contactId: string) => {
-    const response = await getContactById(contactId);
-    return response;
+  async (contactId: string, { dispatch }) => {
+    try {
+      const response = await getContactById(contactId);
+      return response;
+    } catch (error) {
+      dispatch(setError({ message: "Failed to fetch contact" }));
+    }
   }
 );
 
 export const fetchAllContacts = createAsyncThunk(
   "contacts/fetchAllContacts",
-  async () => {
-    const response = await getAllContacts();
-    return response;
+  async (_, { dispatch }) => {
+    try {
+      const response = await getAllContacts();
+      return response;
+    } catch (error) {
+      dispatch(setError({ message: "Failed to fetch contacts" }));
+    }
   }
 );

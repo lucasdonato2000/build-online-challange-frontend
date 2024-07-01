@@ -24,3 +24,8 @@ export interface NoteListProps {
   onPageChange: (page: number) => void;
   onSelectNote: (note: Note) => void;
 }
+
+export interface AddNoteProps {
+  onSave: () => void;
+  onCancel: () => void;
+}

@@ -4,17 +4,14 @@ import { Formik, Form, Field, FormikHelpers } from "formik";
 import { RootState, AppDispatch } from "../store/store";
 import { addNote } from "../store/actions/noteActions";
 import InputField from "./InputField";
-import { Contact } from "../types";
+import { AddNoteProps, Contact } from "../types";
 import Button from "./Button";
-
-interface AddNoteProps {
-  onSave: () => void;
-  onCancel: () => void;
-}
+import { clearError } from "../store/actions";
 
 const AddNote: React.FC<AddNoteProps> = ({ onSave, onCancel }) => {
   const dispatch = useDispatch<AppDispatch>();
   const contacts = useSelector((state: RootState) => state.contacts.contacts);
+  const error = useSelector((state: RootState) => state.notes.error);
   const [selectedContact, setSelectedContact] = React.useState<Contact | null>(
     null
   );
@@ -46,6 +43,7 @@ const AddNote: React.FC<AddNoteProps> = ({ onSave, onCancel }) => {
       <h2 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 font-red-hat truncate w-full overflow-hidden whitespace-nowrap text-ellipsis text-center">
         {selectedContact?.name || "Select a contact"}
       </h2>
+
       <Formik
         initialValues={{ contactId: "", content: "" }}
         onSubmit={(
@@ -57,10 +55,15 @@ const AddNote: React.FC<AddNoteProps> = ({ onSave, onCancel }) => {
           const note = {
             content: values.content,
           };
-          dispatch(addNote({ note, contactId: values.contactId })).then(() => {
-            setSubmitting(false);
-            onSave();
-          });
+          dispatch(addNote({ note, contactId: values.contactId }))
+            .unwrap()
+            .then(() => {
+              setSubmitting(false);
+              onSave();
+            })
+            .catch(() => {
+              setSubmitting(false);
+            });
         }}
       >
         {({ isSubmitting, setFieldValue }) => (

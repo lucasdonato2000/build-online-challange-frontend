@@ -73,11 +73,15 @@ const NoteDashboard: React.FC = () => {
 
   const handleSaveNote = () => {
     setIsAdding(false);
-    dispatch(fetchNotes()); // Refresh notes list after adding a new note
+    dispatch(fetchNotes());
   };
 
   const handleCancel = () => {
     setIsAdding(false);
+  };
+
+  const handleClearError = () => {
+    dispatch(clearError());
   };
 
   if (!isAuthChecked) {
@@ -150,9 +154,7 @@ const NoteDashboard: React.FC = () => {
                 notesPerPage={notesPerPage}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
-                onSelectNote={() => {
-                  /* Future select note logic here */
-                }}
+                onSelectNote={() => {}}
               />
               <Pagination
                 totalItems={total}

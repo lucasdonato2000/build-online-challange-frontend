@@ -39,7 +39,7 @@ const editedContactSlice = createSlice({
       })
       .addCase(addContact.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as { [key: string]: string }; // Handle specific field errors
+        state.error = action.payload as { [key: string]: string };
       });
   },
 });

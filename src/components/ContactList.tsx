@@ -57,7 +57,7 @@ const ContactList: React.FC<ContactListProps> = ({
             <img
               src={contact.profilePicture || defaultAvatar}
               alt={contact.name}
-              className="w-16 sm:w-20 h-16 sm:h-20 rounded-full mr-2 xs:mr-4"
+              className="w-16 sm:w-20 h-16 sm:h-20 rounded-full mr-2 xs:mr-4 priority"
             />
             <div className="text-xs xs:text-base space-y-1 hidden xs:block">
               <h2 className="text-white">{contact.name}</h2>

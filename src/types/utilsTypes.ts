@@ -20,3 +20,18 @@ export interface SearchBarProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
+
+export interface MapTooltipProps {
+  mapCenter: {
+    lat: number;
+    lng: number;
+  } | null;
+  showMap: boolean;
+  isLoaded: boolean;
+}
+
+export interface MapState {
+  mapCenter: { lat: number; lng: number } | null;
+  showMap: boolean;
+  isLoaded: boolean;
+}

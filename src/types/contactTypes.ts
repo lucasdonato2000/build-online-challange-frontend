@@ -14,8 +14,8 @@ export interface ContactState {
   searchTerm: string;
   loading: boolean;
   total: number;
+  error: { [key: string]: string } | null;
 }
-
 export interface ContactListProps {
   searchTerm: string;
   contactsPerPage: number;

@@ -173,15 +173,15 @@ const ContactDashboard: React.FC = () => {
                   className="absolute right-32 bottom-4 lg:top-1/2 lg:transform lg:-translate-y-1/2 cursor-pointer bg-black p-2 rounded-full"
                   onClick={handleBack}
                 >
-                  <MdKeyboardArrowRight className="text-white h-8 w-8 transform rotate-180" />
+                  <MdKeyboardArrowRight className="text-white h-8 w-8 transform" />
                 </div>
               )}
               {isScreenSmall && !isEditing && (
                 <div
-                  className="absolute right-4 bottom-4 bottom-1/4 xs:right-32 lg:top-auto lg:right-32 cursor-pointer bg-black p-2 rounded-full"
+                  className="absolute right-4 bottom-0.5 bottom-1/4 xs:right-32 lg:top-auto lg:right-32 cursor-pointer bg-black p-2 rounded-full"
                   onClick={handleBack}
                 >
-                  <MdKeyboardArrowRight className="text-white h-8 w-8 transform rotate-180" />
+                  <MdKeyboardArrowRight className="text-white h-8 w-8 transform " />
                 </div>
               )}
             </div>

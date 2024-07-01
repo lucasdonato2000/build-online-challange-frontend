@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { useLoadScript } from "@react-google-maps/api";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../store/store";
+import { fetchMapCenter } from "../store/actions/mapActions";
 import { ContactDetailProps, Contact } from "../types";
 import EditContact from "./EditContact";
+import MapTooltip from "./MapTooltip";
+import { setMapLoaded, setShowMap } from "../store/reducers/mapReducer";
 
 const ContactDetail: React.FC<ContactDetailProps> = ({
   contact,
@@ -10,6 +16,11 @@ const ContactDetail: React.FC<ContactDetailProps> = ({
   setIsEditing,
 }) => {
   const defaultAvatar = "/default-avatar.png";
+  const dispatch = useDispatch<AppDispatch>();
+
+  const mapCenter = useSelector((state: RootState) => state.map.mapCenter);
+  const showMap = useSelector((state: RootState) => state.map.showMap);
+  const isLoaded = useSelector((state: RootState) => state.map.isLoaded);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -23,6 +34,22 @@ const ContactDetail: React.FC<ContactDetailProps> = ({
     onEdit(updatedContact);
     setIsEditing(false);
   };
+
+  useEffect(() => {
+    if (contact && contact.address) {
+      dispatch(fetchMapCenter(contact.address));
+    }
+  }, [contact, dispatch]);
+
+  const { isLoaded: scriptLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+  });
+
+  useEffect(() => {
+    if (scriptLoaded) {
+      dispatch(setMapLoaded(true));
+    }
+  }, [scriptLoaded, dispatch]);
 
   if (!contact) {
     return null;
@@ -55,7 +82,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({
               <img
                 src={contact.profilePicture || defaultAvatar}
                 alt={contact.name}
-                className="w-full h-full object-cover  rounded-full"
+                className="w-full h-full object-cover rounded-full"
               />
             </div>
           </div>
@@ -66,12 +93,21 @@ const ContactDetail: React.FC<ContactDetailProps> = ({
             {contact.title}
           </p>
           <div className="w-full text-center text-gray-400 pt-4">
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <h3 className="text-white font-bold font-red-hat truncate">
                 Address
               </h3>
-              <p className="pt-2 font-public-sans truncate">
+              <p
+                className="pt-2 font-public-sans truncate cursor-pointer relative"
+                onMouseEnter={() => dispatch(setShowMap(true))}
+                onMouseLeave={() => dispatch(setShowMap(false))}
+              >
                 {contact.address}
+                <MapTooltip
+                  mapCenter={mapCenter}
+                  showMap={showMap}
+                  isLoaded={isLoaded}
+                />
               </p>
             </div>
             <div className="mb-4">
